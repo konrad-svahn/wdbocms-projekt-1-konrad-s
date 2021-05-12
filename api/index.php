@@ -1,5 +1,12 @@
 <?php
+include("../../../defPass.php");
+
+$mysqli = new mysqli("mysql.arcada.fi","svahnkon",MYSQLPASS,"svahnkon");
+if($mysqli->connect_error) die("MySQL Connect ERROR".$mysqli->connect_error);
+
+
 header("content-type: application/json");
+header("Access-Control-Allow-Methods: POST,PUT,GET,OPTIONS,DELETE");
 
 parse_str($_SERVER["QUERY_STRING"], $reqestVars);
 
@@ -14,6 +21,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 }elseif($_SERVER["REQUEST_METHOD"] == "GET" &! isset($reqestVars["id"])){
 
+    $getstmt = $mysqli -> prepare("SELECT * FROM an_message(cms&databaser)")
 }elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["id"])){}
 
 ?>
