@@ -17,8 +17,13 @@ $(function (){
 function getIp() {
 
     $.get("https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", function(data) {
-        console.log(data.ip);
+        console.log(data);
         
         $("#ip").html(data.ip);
     });
+};
+
+function loggin() {};
+function registrera() {
+    
 };

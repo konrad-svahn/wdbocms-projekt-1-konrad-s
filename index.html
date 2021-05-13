@@ -4,13 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./style.css">
     <title>Projekt 1 - Kundtjänst-chatt</title>
 </head>
 <body>
+<div id="container">
+    <div id="vannish1">
+        <form>
+        <input type="text" id="anvandarnamn" placeholder="användarnamn"> 
+        <input type="text" id="losenord" placeholder="lösenord"><br>
+        <input type="button" value="registrera dig" onclick="registrera()">
+        <input type="button" value="logga in" onclick="loggin()">
+        </form>
+    </div>
+    <br>
     <form>
         <input type="text" id="skrivfalt" placeholder="Skriv ditt medelande"> 
-        <input type="text" id="inputnamn" placeholder="skriv in ditt namn">
     </form>
+    <div id="medelandena"></div>
+</div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="./script.js"></script>
