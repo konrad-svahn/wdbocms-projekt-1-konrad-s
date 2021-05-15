@@ -24,10 +24,20 @@ function getIp() {
     });
 };
 
-function loggin() {};
+function loggin() {
+    var anvandarnamn = document.gg.anvandarnamn.value;
+    var losenord = document.gg.losenord.value;
+    $.post("https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", {RvL: "loggin", losenord: losenord, anvandarnamn: anvandarnamn} ,function(data) {
+        console.log(data);
+    
+        $("#registrera").html(data);
+    });
+};
 
 function registrera() {
-    $.post("https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", function(data) {
+    var anvandarnamn = document.gg.anvandarnamn.value;
+    var losenord = document.gg.losenord.value;
+    $.post("https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", {RvL: "registrering", losenord: losenord, anvandarnamn: anvandarnamn} ,function(data) {
         console.log(data);
         
         $("#registrera").html(data);
