@@ -36,7 +36,12 @@ $check = $mysqli->prepare("SELECT userID FROM CmsDatabaserAnvandare WHERE userID
 
 
 
-if($_SERVER["REQUEST_METHOD"] == "POST" && $reqestVars["RvL"] == "registrering"){
+
+
+
+
+//Registrera användare
+if($_SERVER["REQUEST_METHOD"] == "GET" && $reqestVars["RvL"] == "registrering"){
     $pasword = password_hash($losenord, PASSWORD_DEFAULT);
     $ulvl="1"; 
     
@@ -52,12 +57,8 @@ if(empty($RC["result"])){
     print(json_encode($response));}
 
 
-
-
-
-
-
-}elseif($_SERVER["REQUEST_METHOD"] == "POST" && $reqestVars["RvL"] == "loggin"){
+//Logga in
+}elseif($_SERVER["REQUEST_METHOD"] == "GET" && $reqestVars["RvL"] == "loggin"){
 if(empty($RC["result"])){
     $response = ["result"=>"this user does not exist"];
     print(json_encode($response));
@@ -72,7 +73,7 @@ if(empty($RC["result"])){
         $recived1=$rows[0]["user_level"]; 
         }
 
-        //print(json_encode($rows[0]["pasword"]));
+        
         if(password_verify($losenord, $rows[0]["pasword"])){
             if(!isset($reqestVars["session_key"])){
             //om sesion key inte finns
@@ -96,6 +97,16 @@ if(empty($RC["result"])){
                
 
 
+     
+                
+
+
+
+//method test och ip                
+}elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["ip"])){
+    $response = ["ip" => $_SERVER["REMOTE_ADDR"], "method" => $_SERVER["REQUEST_METHOD"], "sentReqest" => $reqestBody, "reqestVars" => $reqestVars];
+    print(json_encode($response));      
+
 
 }elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["session_key"])){    
     $getstmt = $mysqli->prepare("SELECT * FROM CmsDatabaserMessage WHERE chat_id = ?");
@@ -110,20 +121,11 @@ if(empty($RC["result"])){
     print(json_encode($response));
 
 
-
-    $stmt->bind_param("s", $request_headers["apikey"]);
+    $getstmt->bind_param("s", $request_headers["apikey"]);
 
    
 
 
 
-
-
-
-}elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["id"])){
-    $response = ["ip" => $_SERVER["REMOTE_ADDR"], "method" => $_SERVER["REQUEST_METHOD"], "sentReqest" => $reqestBody, "reqestVars" => $reqestVars];
-    print(json_encode($response));
-}
-
-
+} 
 ?>
