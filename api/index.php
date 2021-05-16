@@ -108,9 +108,18 @@ if(empty($RC["result"])){
     print(json_encode($response));      
 
 
+}elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["session_key"]) && isset($reqestVars["anvandarnamn"]) && isset($reqestVars["message"])){    
+    $poststmt = $mysqli->prepare("INSERT INTO CmsDatabaserMessage (id,chat_id,author_id,created_at,mesage) VALUES(?,?,?,?,?)");print_r($mysqli->error);
+    $poststmt->bind_param("issss",$id,$reqestVars["session_key"],$anvandarnamn,$updated,$reqestVars["message"]);
+    $poststmt->execute();print_r($mysqli->error);
+    $response = ["result"=>true];
+    //print_r($mysqli->error);
+    print(json_encode($response));
+
+   
 }elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["session_key"])){    
     $getstmt = $mysqli->prepare("SELECT * FROM CmsDatabaserMessage WHERE chat_id = ?");
-    $getstmt->bind_param("s", $reqestVars["chat_id"]);
+    $getstmt->bind_param("s", $reqestVars["session_key"]);
     if(!$getstmt){die("ERROR: ".$mysqli->error);}
     $getstmt->execute();
     $reee = $getstmt->get_result(); 
@@ -122,9 +131,6 @@ if(empty($RC["result"])){
 
 
     $getstmt->bind_param("s", $request_headers["apikey"]);
-
-   
-
 
 
 } 

@@ -86,6 +86,7 @@ function logginStep2(){
     document.getElementById("regOutput").innerHTML =  localStorage.getItem("session_key");
     document.getElementById("vannish1").innerHTML = "";
     recive();}
+    else{document.getElementById("vannish2").innerHTML = "";}
 }
 
 
@@ -141,7 +142,7 @@ function recive(){
         url:"https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", 
         headers:{"Content-Type": "application/json"},
         data: {"session_key": localStorage.getItem("session_key")},
-
+        
 
         success: function(data) {
         console.log(data);
