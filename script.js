@@ -29,7 +29,7 @@ function getIp() {
             $("#ip").html(data.ip);
             console.log("respons1");
         },
-        error: function(){console.log("error1");}
+        error: function(){console.log("error0");}
     });
         
 }
@@ -49,9 +49,11 @@ function loggin() {
             console.log(data);
             $("#registrera").html(data);
             localStorage.setItem("session_key", data["session_key"]);
+            localStorage.setItem("user_level", data["user_level"]); 
+            localStorage.setItem("anvandarnamn", anvandarnamn);
             logginStep2();
             },
-            error: function(){console.log("error2");}
+            error: function(){console.log("error1");}
     });}
     else{
     $.ajax({
@@ -65,6 +67,8 @@ function loggin() {
         console.log(data);
         $("#registrera").html(data);
         localStorage.setItem("session_key", data["session_key"]);
+        localStorage.setItem("user_level", data["user_level"]);
+        localStorage.setItem("anvandarnamn", anvandarnamn);
         logginStep2();
         },
         error: function(){console.log("error2");}
@@ -80,7 +84,8 @@ function loggin() {
 function logginStep2(){
     if(localStorage.getItem("session_key") != null){
     document.getElementById("regOutput").innerHTML =  localStorage.getItem("session_key");
-    document.getElementById("vannish1").innerHTML = "";}
+    document.getElementById("vannish1").innerHTML = "";
+    recive();}
 }
 
 
@@ -99,10 +104,49 @@ function registrera() {
 
         success:function(data) {
         console.log(data);
-        console.log("respons3");
         $("#result").html(data);
         document.getElementById("regOutput").innerHTML =  data["result"];
         },
         error: function(){console.log("error3");}
 });   
 };
+
+
+
+
+
+function send(){
+    var message = document.hh.skrivfalt.value;
+    if(message != ""){
+    $.ajax({
+    type: "GET",
+    url:"https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", 
+    headers:{"Content-Type": "application/json"},
+    data: {"session_key": localStorage.getItem("session_key"), "anvandarnamn": localStorage.getItem("anvandarnamn"), "message": message},
+
+
+    success: function(data) {
+    console.log(data);
+    $("#registrera").html(data);
+   
+    },
+    error: function(){console.log("error4");
+}})}else{console.log("inget skrivet");}
+recive();
+}
+
+function recive(){
+    $.ajax({
+        type: "GET",
+        url:"https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", 
+        headers:{"Content-Type": "application/json"},
+        data: {"session_key": localStorage.getItem("session_key")},
+
+
+        success: function(data) {
+        console.log(data);
+        $("#registrera").html(data);
+       
+        },
+        error: function(){console.log("error5");}
+})}
