@@ -94,7 +94,7 @@ if(empty($RC["result"])){
             }$recived2=$rows[0]["session_key"];}
                 $response = ["user_level"=>$recived1,"session_key"=>$recived2];
                 print(json_encode($response));}
-               
+                
 
 
      
