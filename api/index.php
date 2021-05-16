@@ -16,7 +16,7 @@ parse_str($_SERVER["QUERY_STRING"], $reqestVars);
 $reqestJson = file_get_contents("php://input");
 $reqestBody = json_decode($reqestJson);
 
-//temporära variabler
+// variabler
 $anvandarnamn = $reqestVars["anvandarnamn"];
 $losenord = $reqestVars["losenord"]; 
 $id = "1";
@@ -30,7 +30,11 @@ $check = $mysqli->prepare("SELECT userID FROM CmsDatabaserAnvandare WHERE userID
     $rows[] = $row;
     }
     $RC["result"]=$rows;
+    //print(json_encode($rows[0]["userID"]));
     
+
+
+
 
 if($_SERVER["REQUEST_METHOD"] == "POST" && $reqestVars["RvL"] == "registrering"){
     $pasword = password_hash($losenord, PASSWORD_DEFAULT);
@@ -45,48 +49,52 @@ if(empty($RC["result"])){
     //print_r($mysqli->error);
     print(json_encode($response));
 }else{$response = ["result"=>"this user alredy exists"];
-    //print(json_encode($response));
-}
+    print(json_encode($response));}
+
+
+
+
+
 
 
 }elseif($_SERVER["REQUEST_METHOD"] == "POST" && $reqestVars["RvL"] == "loggin"){
-if($check = $mysqli->prepare("SELECT * FROM CmsDatabaserAnvandare WHERE username =".$anvandarnamn) == false){
+if(empty($RC["result"])){
     $response = ["result"=>"this user does not exist"];
     print(json_encode($response));
 }else{
-    $getstmt1 = $mysqli->prepare("SELECT * FROM CmsDatabaserAnvandare WHERE username =".$anvandarnamn);
+    $getstmt1 = $mysqli->prepare("SELECT * FROM CmsDatabaserAnvandare WHERE userID=?");
+    $getstmt1->bind_param("s",$anvandarnamn);
     $getstmt1->execute();
     $result = $getstmt1->get_result(); 
     $rows = [];
     while ($row = $result->fetch_assoc()){
         $rows[] = $row;
-    }$recived1["result"]=$rows;
-    
-
-    if(password_verify($losenord, $recived1["pasword"])){
-        if(!isset($reqestVars["session_key"])){
-        //om sesion key inte finns
-            $sha = sha1(random()); 
-            $mksesion = $mysqli->prepare("INSERT  INTO CmsDatabaserSession (id,session_key,user_id,customer_name,created_at,) VALUES(?,?,?,?,?)");
-            $mksesion->bind_param("issss",$id,$sha,$anvandarnamn,$anvandarnamn,$updated);
-            $mksesion->execute();  
-            $getstmt2 = $mysqli->prepare("SELECT * FROM CmsDatabaserSession WHERE session_key =".$sha);
+        $recived1=$rows[0]["user_level"]; 
         }
-        else{$getstmt2 = $mysqli->prepare("SELECT * FROM CmsDatabaserSession WHERE session_key =".$reqestVars["session_key"]);} 
-        $getstmt2->execute();
-        $result = $getstmt2->get_result(); 
-        $rows = [];
-        while ($row = $result->fetch_assoc()){
-            $rows[] = $row;
-        }$recived2["result"]=$rows;
 
-        $response = ["user_level"=>$recived1["user_level"],"session_key"=>$recived2["session_key"]];
-        print(json_encode($response));
-      
-   
+        //print(json_encode($rows[0]["pasword"]));
+        if(password_verify($losenord, $rows[0]["pasword"])){
+            if(!isset($reqestVars["session_key"])){
+            //om sesion key inte finns
+                $sha = sha1(rand()); 
+                $mksesion = $mysqli->prepare("INSERT INTO CmsDatabaserSession (id,session_key,userID,customer_name,created_at) VALUES(?,?,?,?,?)");
+                $mksesion->bind_param("isiss",$id,$sha,$id,$anvandarnamn,$updated);
+                $mksesion->execute();
+                //en ny session key skapas och skikas som response
+                $getstmt2 = $mysqli->prepare("SELECT * FROM CmsDatabaserSession WHERE session_key ='".$sha."'");print_r($mysqli->error);
+                //anars skikas den session key som gavs i post datan om den fins i databasen 
+            }else{$getstmt2 = $mysqli->prepare("SELECT * FROM CmsDatabaserSession WHERE session_key ='".$reqestVars["session_key"]."'");} 
+            // exekverar getstmt
+            $getstmt2->execute();
+            $result = $getstmt2->get_result(); 
+            $rows = [];
+            while ($row = $result->fetch_assoc()){
+                $rows[] = $row;
+            }$recived2=$rows[0]["session_key"];}
+                $response = ["user_level"=>$recived1,"session_key"=>$recived2];
+                print(json_encode($response));}
+               
 
-    }
-}
 
 
 }elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["session_key"])){    
@@ -116,5 +124,6 @@ if($check = $mysqli->prepare("SELECT * FROM CmsDatabaserAnvandare WHERE username
     $response = ["ip" => $_SERVER["REMOTE_ADDR"], "method" => $_SERVER["REQUEST_METHOD"], "sentReqest" => $reqestBody, "reqestVars" => $reqestVars];
     print(json_encode($response));
 }
+
 
 ?>
