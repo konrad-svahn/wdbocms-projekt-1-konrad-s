@@ -1,3 +1,4 @@
+var chatmeddelanden =[];
 $(document).ready(function () { 
     console.log("js works");
     getIp();  
@@ -9,7 +10,7 @@ $(function (){
         type: "GET",
         URL: "https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/index.php/",
         success: function(data){
-            console.log(data);
+            //console.log(data);
         },
         error: function(){}
     });
@@ -83,10 +84,23 @@ function loggin() {
 
 function logginStep2(){
     if(localStorage.getItem("session_key") != null){
-    document.getElementById("regOutput").innerHTML =  localStorage.getItem("session_key");
-    document.getElementById("vannish1").innerHTML = "";
-    recive();}
+    //document.getElementById("regOutput").innerHTML =  localStorage.getItem("session_key");
+    document.getElementById("vannish1").innerHTML = "";}
     else{document.getElementById("vannish2").innerHTML = "";}
+    
+    
+    if(localStorage.getItem("user_level") == 1){
+        var chatmeddelanden = recive(localStorage.getItem("session_key"));
+        console.log(chatmeddelanden);
+        var print;
+        for(var i = 0; i < chatmeddelanden.length; i++){
+            print += chatmeddelanden[i].author_id+": "+chatmeddelanden[i].mesage+"<br>"
+        } 
+        document.getElementById("medelandena").innerHTML = print;
+        console.log("1");
+    }else if(localStorage.getItem("user_level") == 2){
+        console.log("2");
+    }
 }
 
 
@@ -133,21 +147,36 @@ function send(){
     },
     error: function(){console.log("error4");
 }})}else{console.log("inget skrivet");}
-recive();
+//var chatmeddelanden = recive(localStorage.getItem("session_key"));
+//console.log(chatmeddelanden);
+logginStep2();
 }
 
-function recive(){
+function recive(input){
     $.ajax({
         type: "GET",
         url:"https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", 
         headers:{"Content-Type": "application/json"},
-        data: {"session_key": localStorage.getItem("session_key")},
-        
+        data: {"session_key": input},
+
 
         success: function(data) {
-        console.log(data);
-        $("#registrera").html(data);
-       
+        var sort = []
+        for(var i = 0; i < data.reee.length;i++){
+        var mkdate = [];
+        mkdate ["chat_id"] = data.reee[i].chat_id;;
+        mkdate ["author_id"] = data.reee[i].author_id;
+        var date = new Date(data.reee[i].created_at);
+        mkdate ["created_at"] = date.getTime();
+        mkdate ["mesage"] = data.reee[i].mesage;
+        sort[i] = mkdate;
+        }
+
+        var sorted = sort.sort((a,b) => b.created_at - a.created_at);
+        chatmeddelanden = sorted;
         },
-        error: function(){console.log("error5");}
-})}
+        error: function(){console.log("error5");}  
+});
+
+return chatmeddelanden;
+}
