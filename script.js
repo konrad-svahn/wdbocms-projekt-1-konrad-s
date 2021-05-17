@@ -90,19 +90,47 @@ function logginStep2(){
     
     
     if(localStorage.getItem("user_level") == 1){
-        var chatmeddelanden = recive(localStorage.getItem("session_key"));
-        console.log(chatmeddelanden);
-        var print;
-        for(var i = 0; i < chatmeddelanden.length; i++){
-            print += chatmeddelanden[i].author_id+": "+chatmeddelanden[i].mesage+"<br>"
+        var med = recive(localStorage.getItem("session_key"));
+        var print = "";
+        console.log(med);
+        for(var i = 0; i < med.length; i++){
+            print += med[i].author_id+": "+med[i].mesage+"<br>"
         } 
         document.getElementById("medelandena").innerHTML = print;
-        console.log("1");
     }else if(localStorage.getItem("user_level") == 2){
-        console.log("2");
-    }
-}
+        
+        $.ajax({
+            type: "GET",
+            url: "https://cgi.arcada.fi/~svahnkon/wdbocms-projekt-1-konrad-s/api/", 
+            headers:{"Content-Type": "application/json"},
+            data: {"getall": "getall"},
+    
+    
+            success:function(data) {
+                console.log(data);
+                var print = "<form>";
+                for(var i = 0; i < data.length; i++){
+                    print += '<input type="button" name="'+data[i].session_key+'" value="'+data[i].customer_name+'" onclick="goto(\''+data[i].session_key+'\')"><br>';
+                } print += "</form>";
+                document.getElementById("grid-container").innerHTML = print;
+        
+            },
+            error: function(){console.log("error3");}
+    });}}
 
+
+
+
+    function goto(key){
+       localStorage.setItem("session_key", key);
+       var med = recive(localStorage.getItem("session_key"));
+       var print = "";
+       console.log(med);
+       for(var i = 0; i < med.length; i++){
+           print += med[i].author_id+": "+med[i].mesage+"<br>"
+       } 
+       document.getElementById("medelandena").innerHTML = print; 
+    }
 
 
 

@@ -133,5 +133,16 @@ if(empty($RC["result"])){
     $getstmt->bind_param("s", $request_headers["apikey"]);
 
 
+}elseif($_SERVER["REQUEST_METHOD"] == "GET" && isset($reqestVars["getall"])){ 
+    $getstmt = $mysqli->prepare("SELECT * FROM CmsDatabaserSession");
+    $getstmt->bind_param("s", $reqestVars["session_key"]);
+    if(!$getstmt){die("ERROR: ".$mysqli->error);}
+    $getstmt->execute();
+    $reee = $getstmt->get_result(); 
+    $rows = [];
+    while ($row = $reee->fetch_assoc()){
+        $rows[] = $row;
+    }$response=$rows;
+    print(json_encode($response));
 } 
 ?>
